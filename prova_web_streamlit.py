@@ -546,66 +546,72 @@ else:
     # ======================================================
     # DASHBOARD
     # ======================================================
-    with abas[2]:
+    # ==================================================
+# DASHBOARD CORRIGIDO
+# ==================================================
+with abas[2]:
 
-        df = carregar_resultados()
+    st.subheader("📊 Meu Dashboard")
+
+    df = carregar_resultados()
+
+    if not df.empty:
+
+        df = df[
+            pd.to_numeric(df["id_aluno"], errors="coerce")
+            ==
+            int(user["id_aluno"])
+        ]
 
         if not df.empty:
 
-            df = df[
-                pd.to_numeric(df["id_aluno"])
-                ==
-                int(user["id_aluno"])
-            ]
+            # converter colunas
+            df["percentual"] = pd.to_numeric(
+                df["percentual"],
+                errors="coerce"
+            ).fillna(0)
 
-            if not df.empty:
+            df["nota"] = pd.to_numeric(
+                df["nota"],
+                errors="coerce"
+            ).fillna(0)
 
-                media = round(
-                    pd.to_numeric(
-                        df["percentual"]
-                    ).mean(),
-                    2
-                )
+            # métricas corretas
+            media = round(df["percentual"].mean(), 2)
+            melhor = round(df["percentual"].max(), 2)
+            qtd_meta = int((df["percentual"] >= 95).sum())
 
-                melhor = round(
-                    pd.to_numeric(
-                        df["percentual"]
-                    ).max(),
-                    2
-                )
+            c1, c2, c3 = st.columns(3)
 
-                meta = int(
-                    (
-                        pd.to_numeric(
-                            df["percentual"]
-                        ) >= META
-                    ).sum()
-                )
+            c1.metric(
+                "Média",
+                f"{media:.2f}%"
+            )
 
-                a, b, c = st.columns(3)
+            c2.metric(
+                "Melhor",
+                f"{melhor:.2f}%"
+            )
 
-                a.metric(
-                    "Média",
-                    f"{media}%"
-                )
+            c3.metric(
+                "Meta 95%",
+                qtd_meta
+            )
 
-                b.metric(
-                    "Melhor",
-                    f"{melhor}%"
-                )
+            st.markdown("---")
 
-                c.metric(
-                    "Meta 95%",
-                    meta
-                )
+            # evolução
+            df = df.reset_index(drop=True)
+            df["Tentativa"] = range(1, len(df)+1)
 
-                df["tentativa"] = range(
-                    1,
-                    len(df) + 1
-                )
+            graf = df[["Tentativa", "percentual"]].set_index("Tentativa")
 
-                st.line_chart(
-                    df.set_index("tentativa")[
-                        ["percentual"]
-                    ]
-                )
+            st.line_chart(graf)
+
+            st.caption("Evolução do percentual por prova")
+
+        else:
+            st.info("Nenhum resultado encontrado.")
+
+    else:
+        st.info("Ainda não existem resultados.")
