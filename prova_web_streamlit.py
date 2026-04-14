@@ -543,75 +543,72 @@ else:
                 use_container_width=True
             )
 
-    # ======================================================
-    # DASHBOARD
-    # ======================================================
     # ==================================================
-# DASHBOARD CORRIGIDO
-# ==================================================
-with abas[2]:
-
-    st.subheader("📊 Meu Dashboard")
-
-    df = carregar_resultados()
-
-    if not df.empty:
-
-        df = df[
-            pd.to_numeric(df["id_aluno"], errors="coerce")
-            ==
-            int(user["id_aluno"])
-        ]
-
+    # DASHBOARD CORRIGIDO
+    # ==================================================
+    with abas[2]:
+    
+        st.subheader("📊 Meu Dashboard")
+    
+        df = carregar_resultados()
+    
         if not df.empty:
-
-            # converter colunas
-            df["percentual"] = pd.to_numeric(
-                df["percentual"],
-                errors="coerce"
-            ).fillna(0)
-
-            df["nota"] = pd.to_numeric(
-                df["nota"],
-                errors="coerce"
-            ).fillna(0)
-
-            # métricas corretas
-            media = round(df["percentual"].mean(), 2)
-            melhor = round(df["percentual"].max(), 2)
-            qtd_meta = int((df["percentual"] >= 95).sum())
-
-            c1, c2, c3 = st.columns(3)
-
-            c1.metric(
-                "Média",
-                f"{media:.2f}%"
-            )
-
-            c2.metric(
-                "Melhor",
-                f"{melhor:.2f}%"
-            )
-
-            c3.metric(
-                "Meta 95%",
-                qtd_meta
-            )
-
-            st.markdown("---")
-
-            # evolução
-            df = df.reset_index(drop=True)
-            df["Tentativa"] = range(1, len(df)+1)
-
-            graf = df[["Tentativa", "percentual"]].set_index("Tentativa")
-
-            st.line_chart(graf)
-
-            st.caption("Evolução do percentual por prova")
-
+    
+            df = df[
+                pd.to_numeric(df["id_aluno"], errors="coerce")
+                ==
+                int(user["id_aluno"])
+            ]
+    
+            if not df.empty:
+    
+                # converter colunas
+                df["percentual"] = pd.to_numeric(
+                    df["percentual"],
+                    errors="coerce"
+                ).fillna(0)
+    
+                df["nota"] = pd.to_numeric(
+                    df["nota"],
+                    errors="coerce"
+                ).fillna(0)
+    
+                # métricas corretas
+                media = round(df["percentual"].mean(), 2)
+                melhor = round(df["percentual"].max(), 2)
+                qtd_meta = int((df["percentual"] >= 95).sum())
+    
+                c1, c2, c3 = st.columns(3)
+    
+                c1.metric(
+                    "Média",
+                    f"{media:.2f}%"
+                )
+    
+                c2.metric(
+                    "Melhor",
+                    f"{melhor:.2f}%"
+                )
+    
+                c3.metric(
+                    "Meta 95%",
+                    qtd_meta
+                )
+    
+                st.markdown("---")
+    
+                # evolução
+                df = df.reset_index(drop=True)
+                df["Tentativa"] = range(1, len(df)+1)
+    
+                graf = df[["Tentativa", "percentual"]].set_index("Tentativa")
+    
+                st.line_chart(graf)
+    
+                st.caption("Evolução do percentual por prova")
+    
+            else:
+                st.info("Nenhum resultado encontrado.")
+    
         else:
-            st.info("Nenhum resultado encontrado.")
-
-    else:
-        st.info("Ainda não existem resultados.")
+            st.info("Ainda não existem resultados.")
