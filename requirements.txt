@@ -1,4 +1,5 @@
- Python
-- Streamlit
-- Pandas
-- Excel / Google Sheets
+streamlit
+pandas
+openpyxl
+gspread
+oauth2client
